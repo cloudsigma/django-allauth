@@ -1,3 +1,4 @@
+from django.conf import settings
 import re
 import unicodedata
 
@@ -79,12 +80,12 @@ def email_address_exists(email, exclude_user=None):
     emailaddresses = EmailAddress.objects
     if exclude_user:
         emailaddresses = emailaddresses.exclude(user=exclude_user)
-    ret = emailaddresses.filter(email__iexact=email).exists()
+    ret = emailaddresses.filter(email__iexact=email, user__location_id=settings.SITE_ID).exists()
     if not ret:
         users = get_user_model().objects
         if exclude_user:
             users = users.exclude(user=exclude_user)
-        ret = users.filter(email__iexact=email).exists()
+        ret = users.filter(email__iexact=email, location_id=settings.SITE_ID).exists()
     return ret
 
 

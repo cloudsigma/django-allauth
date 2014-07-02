@@ -1,4 +1,5 @@
 import json
+from django.conf import settings
 
 from django.db import models
 from django.contrib.auth import authenticate
@@ -68,9 +69,10 @@ class SocialAccount(models.Model):
     last_login = models.DateTimeField(auto_now=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     extra_data = JSONField(default='{}')
+    site = models.ForeignKey(Site, null=True, blank=True)
 
     class Meta:
-        unique_together = ('provider', 'uid')
+        unique_together = ('provider', 'uid', 'site')
 
     def authenticate(self):
         return authenticate(account=self)
@@ -144,6 +146,7 @@ class SocialLogin(object):
         user = self.account.user
         user.save()
         self.account.user = user
+        self.account.site_id = settings.SITE_ID
         self.account.save()
         if self.token:
             self.token.account = self.account
@@ -174,7 +177,7 @@ class SocialLogin(object):
         assert not self.is_existing
         try:
             a = SocialAccount.objects.get(provider=self.account.provider, 
-                                          uid=self.account.uid)
+                                          uid=self.account.uid, user__location_id=settings.SITE_ID)
             # Update account
             a.extra_data = self.account.extra_data
             self.account = a
