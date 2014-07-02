@@ -17,8 +17,6 @@ class Migration(SchemaMigration):
                       keep_default=False)
 
 
-        # Changing field 'SocialAccount.user'
-        db.alter_column('socialaccount_socialaccount', 'user_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.CSUser']))
         # Adding unique constraint on 'SocialAccount', fields ['site', 'uid', 'provider']
         db.create_unique('socialaccount_socialaccount', ['site_id', 'uid', 'provider'])
 
@@ -31,8 +29,6 @@ class Migration(SchemaMigration):
         db.delete_column('socialaccount_socialaccount', 'site_id')
 
 
-        # Changing field 'SocialAccount.user'
-        db.alter_column('socialaccount_socialaccount', 'user_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User']))
         # Adding unique constraint on 'SocialAccount', fields ['uid', 'provider']
         db.create_unique('socialaccount_socialaccount', ['uid', 'provider'])
 
