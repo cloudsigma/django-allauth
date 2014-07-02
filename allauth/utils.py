@@ -74,18 +74,20 @@ def valid_email_or_none(email):
     return ret
 
 
-def email_address_exists(email, exclude_user=None):
+def email_address_exists(email, exclude_user=None, location=None):
+    if location is None:
+        location = settings.SITE_ID
     from allauth.account.models import EmailAddress
 
     emailaddresses = EmailAddress.objects
     if exclude_user:
         emailaddresses = emailaddresses.exclude(user=exclude_user)
-    ret = emailaddresses.filter(email__iexact=email, user__location_id=settings.SITE_ID).exists()
+    ret = emailaddresses.filter(email__iexact=email, user__location_id=location).exists()
     if not ret:
         users = get_user_model().objects
         if exclude_user:
             users = users.exclude(user=exclude_user)
-        ret = users.filter(email__iexact=email, location_id=settings.SITE_ID).exists()
+        ret = users.filter(email__iexact=email, location_id=location).exists()
     return ret
 
 
