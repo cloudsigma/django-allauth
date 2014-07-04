@@ -1,72 +1,69 @@
-# encoding: utf-8
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-class Migration(SchemaMigration):
-
-    def forwards(self, orm):
-        
-        # Adding model 'SocialAccount'
-        db.create_table('socialaccount_socialaccount', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('last_login', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('date_joined', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-        ))
-        db.send_create_signal('socialaccount', ['SocialAccount'])
+from django.db import models, migrations
+from django.conf import settings
+import allauth.socialaccount.fields
 
 
-    def backwards(self, orm):
-        
-        # Deleting model 'SocialAccount'
-        db.delete_table('socialaccount_socialaccount')
+class Migration(migrations.Migration):
 
+    dependencies = [
+        ('sites', '__first__'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
 
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'socialaccount.socialaccount': {
-            'Meta': {'object_name': 'SocialAccount'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
-        }
-    }
-
-    complete_apps = ['socialaccount']
+    operations = [
+        migrations.CreateModel(
+            name='SocialAccount',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('provider', models.CharField(max_length=30, choices=[(b'twitter', b'Twitter'), (b'github', b'GitHub'), (b'facebook', b'Facebook'), (b'linkedin', b'LinkedIn'), (b'google', b'Google')])),
+                ('uid', models.CharField(max_length=255)),
+                ('last_login', models.DateTimeField(auto_now=True)),
+                ('date_joined', models.DateTimeField(auto_now_add=True)),
+                ('extra_data', allauth.socialaccount.fields.JSONField(default=b'{}')),
+                ('site', models.ForeignKey(blank=True, to='sites.Site', null=True)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AlterUniqueTogether(
+            name='socialaccount',
+            unique_together=set([(b'provider', b'uid', b'site')]),
+        ),
+        migrations.CreateModel(
+            name='SocialApp',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('provider', models.CharField(max_length=30, choices=[(b'twitter', b'Twitter'), (b'github', b'GitHub'), (b'facebook', b'Facebook'), (b'linkedin', b'LinkedIn'), (b'google', b'Google')])),
+                ('name', models.CharField(max_length=40)),
+                ('client_id', models.CharField(help_text=b'App ID, or consumer key', max_length=100)),
+                ('key', models.CharField(help_text=b'Key (Stack Exchange only)', max_length=100, blank=True)),
+                ('secret', models.CharField(help_text=b'API secret, client secret, or consumer secret', max_length=100)),
+                ('sites', models.ManyToManyField(to='sites.Site', blank=True)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='SocialToken',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('token', models.CharField(max_length=200)),
+                ('token_secret', models.CharField(max_length=200, blank=True)),
+                ('account', models.ForeignKey(to='socialaccount.SocialAccount')),
+                ('app', models.ForeignKey(to='socialaccount.SocialApp')),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AlterUniqueTogether(
+            name='socialtoken',
+            unique_together=set([(b'app', b'account')]),
+        ),
+    ]
