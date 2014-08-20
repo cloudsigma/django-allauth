@@ -177,7 +177,7 @@ class SocialLogin(object):
         assert not self.is_existing
         try:
             a = SocialAccount.objects.get(provider=self.account.provider, 
-                                          uid=self.account.uid, user__location_id=settings.SITE_ID)
+                                          uid=self.account.uid, user__csuser__location_id=settings.SITE_ID)
             # Update account
             a.extra_data = self.account.extra_data
             self.account = a
