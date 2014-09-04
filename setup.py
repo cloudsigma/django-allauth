@@ -98,7 +98,7 @@ package_data = find_package_data(exclude_directories=excluded_directories)
 
 METADATA = dict(
     name='django-allauth',
-    version='0.9.0cs5',
+    version='0.9.0cs6',
     author='Raymond Penners',
     author_email='raymond.penners@intenct.nl',
     description='Integrated set of Django applications addressing authentication, registration, account management as well as 3rd party (social) account authentication.',
@@ -108,7 +108,8 @@ METADATA = dict(
     install_requires=['django',
                       'oauth2',
                       'python-openid',
-                      'requests'],
+                      'requests',
+                      'httplib2==0.9'],
     include_package_data=True,
     classifiers=[
         'Development Status :: 4 - Beta',

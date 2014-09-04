@@ -95,7 +95,7 @@ def perform_login(request, user, redirect_url=None):
     # whereas I do see the downsides (having to bother the integrator
     # to set up authentication backends in settings.py
     if not hasattr(user, 'backend'):
-        user.backend = "django.contrib.auth.backends.ModelBackend"
+        user.backend = "turlo.accounts.backends.email_auth_backend.EmailAuthBackend"
     signals.user_logged_in.send(sender=user.__class__, 
                                 request=request, 
                                 user=user)
