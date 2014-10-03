@@ -96,8 +96,8 @@ class SocialAccount(models.Model):
 class SocialToken(models.Model):
     app = models.ForeignKey(SocialApp)
     account = models.ForeignKey(SocialAccount)
-    token = models.CharField(max_length=200)
-    token_secret = models.CharField(max_length=200, blank=True)
+    token = models.CharField(max_length=1024)
+    token_secret = models.CharField(max_length=1024, blank=True)
 
     class Meta:
         unique_together = ('app', 'account')
