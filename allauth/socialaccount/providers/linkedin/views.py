@@ -1,5 +1,6 @@
 from xml.etree import ElementTree
 from xml.parsers.expat import ExpatError
+from allauth.account.models import EmailAddress
 
 from allauth.socialaccount.providers.oauth.client import OAuth
 from allauth.socialaccount.providers.oauth.views import (OAuthAdapter,
@@ -57,11 +58,14 @@ class LinkedInOAuthAdapter(OAuthAdapter):
             .populate_new_user(email=extra_data.get('email-address'),
                                first_name=extra_data.get('first-name'),
                                last_name=extra_data.get('last-name'))
+        email_addresses = [EmailAddress(email=user.email,
+                                        verified=True,
+                                        primary=True)]
         account = SocialAccount(user=user,
                                 provider=self.provider_id,
                                 extra_data=extra_data,
                                 uid=uid)
-        return SocialLogin(account)
+        return SocialLogin(account, email_addresses=email_addresses)
 
 oauth_login = OAuthLoginView.adapter_view(LinkedInOAuthAdapter)
 oauth_callback = OAuthCallbackView.adapter_view(LinkedInOAuthAdapter)
